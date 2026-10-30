@@ -1,0 +1,33 @@
+name: Promote model
+
+# After a pull request is merged into main: re-check the gate, then make the model @champion.
+on:
+  push:
+    branches: [main]
+    paths: ["dvc.lock", "metrics/eval_metrics.json", "run_info.json"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DAGSHUB_OWNER: ${{ vars.DAGSHUB_OWNER }}
+  DAGSHUB_REPO: ${{ vars.DAGSHUB_REPO || 'port-cargo-xai' }}
+  DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+
+jobs:
+  promote:
+    if: vars.DAGSHUB_OWNER != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - run: uv sync
+      - name: Quality gate
+        run: uv run python -m src.gate
+      - name: Register and promote to @champion
+        run: uv run python -m src.registry promote
+      - name: Summary
+        run: cat gate_report.md >> "$GITHUB_STEP_SUMMARY"

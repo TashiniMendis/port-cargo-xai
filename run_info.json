@@ -1,0 +1,5 @@
+{
+  "run_id": "a12ec32484a74ddb98ba3eb799a685f5",
+  "model_uri": "models:/m-b72399b5d3b14cb4a96b81790129a000",
+  "tracking_uri": "sqlite:///D:/Tashini/DB Updates/AML/port-cargo-xai/mlflow.db"
+}

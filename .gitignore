@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+# local MLflow store (DagsHub is used when the secrets are set)
+mlflow.db
+mlruns/
+mlartifacts/
+# app logs
+logs/
+data/production/
+*.log

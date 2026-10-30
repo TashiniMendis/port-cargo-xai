@@ -1,0 +1,26 @@
+# All tunable settings live here. DVC re-runs a stage when the parameters it uses change.
+data:
+  raw_path: data/raw/port_activity.csv
+  val_start: "2024-01-01"     # train = 2019-2023, validation = 2024
+  test_start: "2025-01-01"    # test = 2025-01-01 .. day before the hold-out day
+
+model:
+  name: port-cargo-ebm        # MLflow registered-model name
+  random_state: 42
+  # Fixed EBM settings (justified in the report, section 3.2)
+  outer_bags: 8               # bagged copies averaged -> smoother shape functions, error bars
+  inner_bags: 0
+  max_rounds: 5000            # upper bound; early stopping on the inner validation split ends sooner
+  early_stopping_rounds: 100
+  validation_size: 0.15
+  # Grid searched on the 2024 validation year (best combination refit on train + validation)
+  grid:                       # 3 x 4 x 2 x 2 x 2 = 96 combinations (~3 s each)
+    learning_rate: [0.01, 0.02, 0.04]
+    interactions: [0, 5, 10, 20]
+    max_bins: [64, 256]
+    min_samples_leaf: [4, 16]
+    max_leaves: [2, 3]
+
+gate:
+  metric: test_mae            # lower is better
+  tolerance: 0.0              # challenger must be <= champion * (1 + tolerance)

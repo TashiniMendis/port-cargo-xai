@@ -1,0 +1,43 @@
+{
+  "rows": 11048,
+  "columns": 29,
+  "ports": [
+    "Colombo",
+    "Galle",
+    "Hambantota",
+    "Trincomalee"
+  ],
+  "date_min": "2019-01-01",
+  "date_max": "2026-07-24",
+  "null_cells": 0,
+  "duplicate_port_days": 0,
+  "missing_calendar_days": 0,
+  "constant_columns": [
+    "country",
+    "ISO3"
+  ],
+  "import_on_zero_call_days": 0,
+  "zero_import_share": 0.6059,
+  "splits": {
+    "train": {
+      "rows": 7304,
+      "from": "2019-01-01",
+      "to": "2023-12-31"
+    },
+    "val": {
+      "rows": 1464,
+      "from": "2024-01-01",
+      "to": "2024-12-31"
+    },
+    "test": {
+      "rows": 2276,
+      "from": "2025-01-01",
+      "to": "2026-07-23"
+    },
+    "holdout": {
+      "rows": 4,
+      "from": "2026-07-24",
+      "to": "2026-07-24"
+    }
+  }
+}

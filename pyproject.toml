@@ -1,0 +1,46 @@
+[project]
+name = "port-cargo-xai"
+version = "1.0.0"
+description = "Explainable Boosting Machine for daily import cargo at Sri Lankan ports"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "scikit-learn>=1.5",
+    "interpret-core>=0.6",
+    "xgboost>=2.1",
+    "shap>=0.46",
+    "lime>=0.2.0.1",
+    "matplotlib>=3.8",
+    "pyyaml>=6.0",
+    "mlflow>=2.16",
+    "dvc>=3.50",
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "streamlit>=1.40",
+    "plotly>=5.20",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+    "httpx>=0.27",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["mlruns"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "B", "UP"]
+ignore = ["E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

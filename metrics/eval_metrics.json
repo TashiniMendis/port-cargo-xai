@@ -1,0 +1,11 @@
+{
+  "test_mae": 7598.9427,
+  "test_rmse": 15780.3786,
+  "test_r2": 0.7113,
+  "test_wape": 42.6847,
+  "mae_colombo": 18723.43,
+  "mae_hambantota": 6013.65,
+  "mae_trincomalee": 5552.22,
+  "mae_galle": 106.48,
+  "mean_prediction": 16437.22
+}

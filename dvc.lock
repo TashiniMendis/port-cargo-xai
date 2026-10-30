@@ -1,0 +1,219 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python -m src.data
+    deps:
+    - path: data/raw/port_activity.csv
+      hash: md5
+      md5: 7f8a9fd7f3390e236a1856980b15140d
+      size: 1333243
+    - path: src/config.py
+      hash: md5
+      md5: 1f790c7eaa2337b6ec3863a5cf2e0b8c
+      size: 1397
+    - path: src/data.py
+      hash: md5
+      md5: 38a98e8e103bd52c92a07a93d69d25c3
+      size: 6401
+    params:
+      params.yaml:
+        data:
+          raw_path: data/raw/port_activity.csv
+          val_start: '2024-01-01'
+          test_start: '2025-01-01'
+    outs:
+    - path: data/processed
+      hash: md5
+      md5: 4f984878673f35158bc7c8095cec8c10.dir
+      size: 1217718
+      nfiles: 5
+    - path: metrics/data_report.json
+      hash: md5
+      md5: c77e2d71e2e02bbd3d34fe2a294ab83b
+      size: 806
+  train:
+    cmd: python -m src.train
+    deps:
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 6e01a7f1479df9f15eb4e5aa888a3a4d
+      size: 524814
+    - path: data/processed/val.csv
+      hash: md5
+      md5: 8c6fe49af7ad33d2fe958e9db4407d21
+      size: 102025
+    - path: src/models.py
+      hash: md5
+      md5: 6e8a6a2b630e59f7ccb6b5f78b071c38
+      size: 3943
+    - path: src/train.py
+      hash: md5
+      md5: fded41d86e54a3fbf120ee84bb40d92c
+      size: 2995
+    params:
+      params.yaml:
+        model:
+          name: port-cargo-ebm
+          random_state: 42
+          outer_bags: 8
+          inner_bags: 0
+          max_rounds: 5000
+          early_stopping_rounds: 100
+          validation_size: 0.15
+          grid:
+            learning_rate:
+            - 0.01
+            - 0.02
+            - 0.04
+            interactions:
+            - 0
+            - 5
+            - 10
+            - 20
+            max_bins:
+            - 64
+            - 256
+            min_samples_leaf:
+            - 4
+            - 16
+            max_leaves:
+            - 2
+            - 3
+    outs:
+    - path: metrics/tuning.csv
+      hash: md5
+      md5: ffd74a1cf244534218afd7372ba0c880
+      size: 5774
+    - path: models/best_params.json
+      hash: md5
+      md5: d164cc73be640bc833ca1bb267fa45c6
+      size: 118
+    - path: models/model.pkl
+      hash: md5
+      md5: 61ca80bbb79e759ef90a7266a83a582b
+      size: 779381
+    - path: run_info.json
+      hash: md5
+      md5: abe041cd99e9d890296d756800b7b84e
+      size: 197
+  evaluate:
+    cmd: python -m src.evaluate
+    deps:
+    - path: data/processed/holdout.csv
+      hash: md5
+      md5: 6a3f6c51578e1e9bc75910adb974467f
+      size: 470
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 46dca17f12f1c8566d9c2f664bee57bb
+      size: 159420
+    - path: models/model.pkl
+      hash: md5
+      md5: 61ca80bbb79e759ef90a7266a83a582b
+      size: 779381
+    - path: src/evaluate.py
+      hash: md5
+      md5: be3b15ea66ac9f7168415c6e13aca8f5
+      size: 3798
+    - path: src/metrics.py
+      hash: md5
+      md5: b6f2c9fe0d11c01692a2e2cee4f95b84
+      size: 662
+    outs:
+    - path: metrics/eval_metrics.json
+      hash: md5
+      md5: 48c5de92c1371cad7e1e463671f36801
+      size: 249
+    - path: metrics/holdout_predictions.csv
+      hash: md5
+      md5: 0621ad5e2562fc1d5142ca452f5ed02d
+      size: 159
+    - path: metrics/per_port.json
+      hash: md5
+      md5: ebe4d8809f8c2dfc106a68e931c0a229
+      size: 920
+    - path: plots/actual_vs_predicted.png
+      hash: md5
+      md5: 34e732c86d93cb1955d10c86855d389d
+      size: 126252
+    - path: plots/residuals.png
+      hash: md5
+      md5: 75a2b65143a52a1d9ea18ebed7a69cf1
+      size: 17732
+  compare:
+    cmd: python -m src.experiments
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 46dca17f12f1c8566d9c2f664bee57bb
+      size: 159420
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 6e01a7f1479df9f15eb4e5aa888a3a4d
+      size: 524814
+    - path: data/processed/val.csv
+      hash: md5
+      md5: 8c6fe49af7ad33d2fe958e9db4407d21
+      size: 102025
+    - path: models/model.pkl
+      hash: md5
+      md5: 61ca80bbb79e759ef90a7266a83a582b
+      size: 779381
+    - path: src/experiments.py
+      hash: md5
+      md5: dd363fd28358f487d1c8fb63d6df715a
+      size: 2544
+    - path: src/metrics.py
+      hash: md5
+      md5: b6f2c9fe0d11c01692a2e2cee4f95b84
+      size: 662
+    - path: src/models.py
+      hash: md5
+      md5: 6e8a6a2b630e59f7ccb6b5f78b071c38
+      size: 3943
+    outs:
+    - path: metrics/experiments.csv
+      hash: md5
+      md5: 14fb0551dd44f3d73da32d28672f11cf
+      size: 426
+    - path: plots/model_comparison.png
+      hash: md5
+      md5: 79a2053c75c16c26000a4f2cd3057754
+      size: 34038
+  explain:
+    cmd: python -m src.explain
+    deps:
+    - path: data/processed/holdout.csv
+      hash: md5
+      md5: 6a3f6c51578e1e9bc75910adb974467f
+      size: 470
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 46dca17f12f1c8566d9c2f664bee57bb
+      size: 159420
+    - path: models/model.pkl
+      hash: md5
+      md5: 61ca80bbb79e759ef90a7266a83a582b
+      size: 779381
+    - path: src/explain.py
+      hash: md5
+      md5: f4e2c8013d6795c334d469b942f26687
+      size: 13186
+    - path: src/metrics.py
+      hash: md5
+      md5: b6f2c9fe0d11c01692a2e2cee4f95b84
+      size: 662
+    outs:
+    - path: metrics/fairness.json
+      hash: md5
+      md5: 902e986965b83958e1d1fd0d6d67e35e
+      size: 1497
+    - path: metrics/xai_summary.json
+      hash: md5
+      md5: 882e6521d41bd822eebc308ee707a860
+      size: 4230
+    - path: plots/xai
+      hash: md5
+      md5: 1ca534f1316219288470651a806eb4db.dir
+      size: 740954
+      nfiles: 9

@@ -1,0 +1,86 @@
+stages:
+  prepare:
+    cmd: python -m src.data
+    deps:
+      - data/raw/port_activity.csv
+      - src/data.py
+      - src/config.py
+    params:
+      - data
+    outs:
+      - data/processed
+    metrics:
+      - metrics/data_report.json:
+          cache: false
+
+  train:
+    cmd: python -m src.train
+    deps:
+      - data/processed/train.csv
+      - data/processed/val.csv
+      - src/train.py
+      - src/models.py
+    params:
+      - model
+    outs:
+      - models/model.pkl
+      - models/best_params.json:
+          cache: false
+      - metrics/tuning.csv:
+          cache: false
+      - run_info.json:
+          cache: false
+
+  evaluate:
+    cmd: python -m src.evaluate
+    deps:
+      - models/model.pkl
+      - data/processed/test.csv
+      - data/processed/holdout.csv
+      - src/evaluate.py
+      - src/metrics.py
+    metrics:
+      - metrics/eval_metrics.json:
+          cache: false
+    outs:
+      - metrics/per_port.json:
+          cache: false
+      - metrics/holdout_predictions.csv:
+          cache: false
+    plots:
+      - plots/actual_vs_predicted.png:
+          cache: false
+      - plots/residuals.png:
+          cache: false
+
+  compare:
+    cmd: python -m src.experiments
+    deps:
+      - models/model.pkl
+      - data/processed/train.csv
+      - data/processed/val.csv
+      - data/processed/test.csv
+      - src/experiments.py
+      - src/metrics.py
+      - src/models.py
+    outs:
+      - metrics/experiments.csv:
+          cache: false
+      - plots/model_comparison.png:
+          cache: false
+
+  explain:
+    cmd: python -m src.explain
+    deps:
+      - models/model.pkl
+      - data/processed/test.csv
+      - data/processed/holdout.csv
+      - src/explain.py
+      - src/metrics.py
+    outs:
+      - plots/xai:
+          cache: false
+      - metrics/xai_summary.json:
+          cache: false
+      - metrics/fairness.json:
+          cache: false

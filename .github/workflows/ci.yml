@@ -1,0 +1,58 @@
+name: CI
+
+# Runs on every pull request into main: lint, tests, data/model pull, pipeline check, quality gate.
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  DAGSHUB_OWNER: ${{ vars.DAGSHUB_OWNER }}
+  DAGSHUB_REPO: ${{ vars.DAGSHUB_REPO || 'port-cargo-xai' }}
+  DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: uv sync
+
+      - name: Lint
+        run: make lint
+
+      - name: Tests
+        run: make test
+
+      - name: Pull data and model from DagsHub
+        if: env.DAGSHUB_TOKEN != ''
+        run: |
+          make dvc-auth
+          uv run dvc pull
+
+      - name: Pipeline outputs match dvc.lock
+        if: env.DAGSHUB_TOKEN != ''
+        run: |
+          status=$(uv run dvc status --json)
+          echo "$status"
+          test "$status" = "{}" || { echo "::error::dvc.lock is stale - run 'make repro' and commit"; exit 1; }
+
+      - name: Quality gate
+        if: env.DAGSHUB_TOKEN != ''
+        run: uv run python -m src.gate
+
+      - name: Post gate report on the pull request
+        if: always() && github.event_name == 'pull_request' && hashFiles('gate_report.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr comment ${{ github.event.pull_request.number }} --body-file gate_report.md
