@@ -1,11 +1,11 @@
 {
-  "test_mae": 7598.9427,
-  "test_rmse": 15780.3786,
-  "test_r2": 0.7113,
-  "test_wape": 42.6847,
-  "mae_colombo": 18723.43,
-  "mae_hambantota": 6013.65,
-  "mae_trincomalee": 5552.22,
-  "mae_galle": 106.48,
-  "mean_prediction": 16437.22
+  "test_mae": 7597.6889,
+  "test_rmse": 15778.4616,
+  "test_r2": 0.7114,
+  "test_wape": 42.6777,
+  "mae_colombo": 18712.28,
+  "mae_hambantota": 6016.74,
+  "mae_trincomalee": 5551.35,
+  "mae_galle": 110.39,
+  "mean_prediction": 16445.44
 }

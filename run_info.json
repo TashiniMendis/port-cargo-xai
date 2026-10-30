@@ -1,5 +1,5 @@
 {
-  "run_id": "a12ec32484a74ddb98ba3eb799a685f5",
-  "model_uri": "models:/m-b72399b5d3b14cb4a96b81790129a000",
-  "tracking_uri": "sqlite:///D:/Tashini/DB Updates/AML/port-cargo-xai/mlflow.db"
+  "run_id": "c10c25c1c25943789c66299c52d37bff",
+  "model_uri": "models:/m-5162246eed3e4822b2c91d9a4567bcc3",
+  "tracking_uri": "https://dagshub.com/TashiniMendis/port-cargo-xai.mlflow"
 }
